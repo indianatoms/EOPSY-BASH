@@ -1,0 +1,92 @@
+#!/bin/bash
+
+help()
+{
+cat<<EOT
+
+Arguments:
+ -l			lowercase
+ -u			uprpercase
+ -r			recursive
+ -h 			help
+ <sed pattern> 		using sed pattern
+
+Examples:
+	$name [-r] [-l|-u] <dir|file names>
+	$name [-r] <sed pattern> <dir/file names> 
+
+
+EOT
+exit
+}
+
+
+if [ -z "$1" ]
+then
+		echo "no arguments"
+exit
+
+elif [ $1 = "-h" ]
+then
+	help
+exit
+
+elif [ $1 = "-r" ]
+then
+	if [[ $2 = "-l" && ! -z "$3" ]]
+	then
+	for SRC in `find "${@:3}" -depth`
+	do
+    		DST=`dirname "${SRC}"`/`basename "${SRC}" | tr '[A-Z]' '[a-z]'`
+    		if [ "${SRC}" != "${DST}" ]
+    		then
+        	[ ! -e "${DST}" ] && mv -T "${SRC}" "${DST}" || echo "${SRC} was not renamed"
+    	fi
+	done
+
+	elif [[  $2 = "-u" && ! -z "$3" ]]
+        then
+        for SRC in `find "${@:3}" -depth`
+	do
+    		DST=`dirname "${SRC}"`/`basename "${SRC}" | tr '[a-z]' '[A-Z]'`
+    		if [ "${SRC}" != "${DST}" ]
+    		then
+        	[ ! -e "${DST}" ] && mv -T "${SRC}" "${DST}" || echo "${SRC} was not renamed"
+    	fi
+	done
+
+	else
+		for SRC in `find "${@:3}" -depth`
+        do
+	        for var in "${@:3}"
+	do
+		x = "$var"
+                DST=`dirname "${SRC}"`/`basename "${SRC}" | mv "$var" "`echo "$x" | sed -s "$2"`"
+                if [ "${SRC}" != "${DST}" ]
+                then
+                [ ! -e "${DST}" ] && mv -T "${SRC}" "${DST}" || echo "${SRC} was not renamed"
+        fi
+	done
+        done
+	
+fi
+
+
+
+
+
+elif [[ $1 = "-l" && ! -z "$2" ]]
+then
+        rename 'y/A-Z/a-z/' "${@:2}"
+
+elif [[ $1 = "-u" && ! -z "$2" ]]
+then
+        rename 'y/a-z/A-Z/' "${@:2}"
+else
+	for var in "${@:2}"
+do
+	x="$var"`
+	mv "$var" "`echo "$x" | sed -s "$1"`"
+done
+fi
+
