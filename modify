@@ -28,8 +28,8 @@ exit
 
 elif [ $1 = "-h" ]
 then
-	help
-exit
+        help
+
 
 elif [ $1 = "-r" ]
 then
@@ -54,21 +54,20 @@ then
         	[ ! -e "${DST}" ] && mv -T "${SRC}" "${DST}" || echo "${SRC} was not renamed"
     	fi
 	done
-
-	else
-		for SRC in `find "${@:3}" -depth`
+	        else
+                for SRC in `find "${@:3}" -depth`
         do
-	        for var in "${@:3}"
-	do
-		x = "$var"
-                DST=`dirname "${SRC}"`/`basename "${SRC}" | mv "$var" "`echo "$x" | sed -s "$2"`"
+                for var in "${@:3}"
+        do
+                x = "$var"
+                DST=`dirname "${SRC}"`/`basename "${SRC}" | mv "$var" "`echo "$x" | sed -s "$var"`"`
                 if [ "${SRC}" != "${DST}" ]
                 then
                 [ ! -e "${DST}" ] && mv -T "${SRC}" "${DST}" || echo "${SRC} was not renamed"
         fi
-	done
         done
-	
+        done
+
 fi
 
 
@@ -85,7 +84,7 @@ then
 else
 	for var in "${@:2}"
 do
-	x="$var"`
+	x="$var"
 	mv "$var" "`echo "$x" | sed -s "$1"`"
 done
 fi
