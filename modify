@@ -55,20 +55,19 @@ then
     	fi
 	done
 	        else
-                for SRC in `find "${@:3}" -depth`
-        do
-                for var in "${@:3}"
-        do
-                x = "$var"
-                DST=`dirname "${SRC}"`/`basename "${SRC}" | mv "$var" "`echo "$x" | sed -s "$var"`"`
-                if [ "${SRC}" != "${DST}" ]
-                then
-                [ ! -e "${DST}" ] && mv -T "${SRC}" "${DST}" || echo "${SRC} was not renamed"
-        fi
-        done
-        done
+                	for SRC in `find "${@:3}" -depth`
+        		do             		
+					BASE=`basename "${SRC}"`              			
+					DST=`echo "$BASE" | sed -s "$2"`
+					DST=`dirname "${SRC}"`/"$DST"
+					#echo $DST
+					if [ "${SRC}" != "${DST}" ]
+                			then
+                				[ ! -e "${DST}" ] && mv "${SRC}" "${DST}"
+        				fi       			
+        		done
 
-fi
+		fi
 
 
 
@@ -84,8 +83,7 @@ then
 else
 	for var in "${@:2}"
 do
-	x="$var"
-	mv "$var" "`echo "$x" | sed -s "$1"`"
+	mv "$var" "`echo "$var" | sed -s "$1"`"
 done
 fi
 
