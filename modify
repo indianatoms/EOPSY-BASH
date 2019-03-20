@@ -28,6 +28,11 @@ exit
 
 elif [ $1 = "-h" ]
 then
+	if [[ $2 = "-l" || $2 = "-u" || $2 = "-r" || $2 = "-h" ]]
+	then
+		echo "invalid syntax"
+	exit
+	fi
         help
 
 
@@ -75,15 +80,27 @@ then
 
 elif [[ $1 = "-l" && ! -z "$2" ]]
 then
+	if [[ $2 = "-l" || $2 = "-u" || $2 = "-r" || $2 = "-h" ]]
+	then
+		echo "invalid syntax"
+	exit
+	fi
         rename 'y/A-Z/a-z/' "${@:2}"
+	
 
 elif [[ $1 = "-u" && ! -z "$2" ]]
 then
+	if [[ $2 = "-l" || $2 = "-u" || $2 = "-r" || $2 = "-h" ]]
+	then
+		echo "invalid syntax"
+	exit
+	fi
         rename 'y/a-z/A-Z/' "${@:2}"
 else
-	for var in "${@:2}"
+ 	for var in "${@:2}"
 do
-	mv "$var" "`echo "$var" | sed -s "$1"`"
+	mv "$var" "`echo "$var" | sed -s "$1"`"	
 done
+
 fi
 
