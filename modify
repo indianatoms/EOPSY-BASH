@@ -1,12 +1,17 @@
 #!/bin/bash
 
+#komantarze
+#błędy na wypadek wpisania złych argumentów
+
+
+
 help()
 {
 cat<<EOT
 
 Arguments:
  -l			lowercase
- -u			uprpercase
+ -u			uprpercase 		#literówki
  -r			recursive
  -h 			help
  <sed pattern> 		using sed pattern
@@ -21,14 +26,14 @@ exit
 }
 
 
-if [ -z "$1" ]
+if [ -z "$1" ] #check if argument exists
 then
 		echo "no arguments"
 exit
 
 elif [ $1 = "-h" ]
 then
-	if [[ $2 = "-l" || $2 = "-u" || $2 = "-r" || $2 = "-h" ]]
+	if [[ $2 = "-l" || $2 = "-u" || $2 = "-r" || $2 = "-h" ]]	#opisać
 	then
 		echo "invalid syntax"
 	exit
@@ -38,14 +43,14 @@ then
 
 elif [ $1 = "-r" ]
 then
-	if [[ $2 = "-l" && ! -z "$3" ]]
+	if [[ $2 = "-l" && ! -z "$3" ]] #opisac
 	then
 	for SRC in `find "${@:3}" -depth`
 	do
     		DST=`dirname "${SRC}"`/`basename "${SRC}" | tr '[A-Z]' '[a-z]'`
     		if [ "${SRC}" != "${DST}" ]
     		then
-        	[ ! -e "${DST}" ] && mv -T "${SRC}" "${DST}" || echo "${SRC} was not renamed"
+        	[ ! -e "${DST}" ] && mv -T "${SRC}" "${DST}" || echo "${SRC} was not renamed" #opisać
     	fi
 	done
 
@@ -56,7 +61,7 @@ then
     		DST=`dirname "${SRC}"`/`basename "${SRC}" | tr '[a-z]' '[A-Z]'`
     		if [ "${SRC}" != "${DST}" ]
     		then
-        	[ ! -e "${DST}" ] && mv -T "${SRC}" "${DST}" || echo "${SRC} was not renamed"
+        	[ ! -e "${DST}" ] && mv -T "${SRC}" "${DST}" || echo "${SRC} was not renamed" #opisać
     	fi
 	done
 	        else
@@ -78,17 +83,17 @@ then
 
 
 
-elif [[ $1 = "-l" && ! -z "$2" ]]
+elif [[ $1 = "-l" && ! -z "$2" ]] #infomacja o bledzie
 then
 	if [[ $2 = "-l" || $2 = "-u" || $2 = "-r" || $2 = "-h" ]]
 	then
 		echo "invalid syntax"
 	exit
 	fi
-        rename 'y/A-Z/a-z/' "${@:2}"
+        rename 'y/A-Z/a-z/' "${@:2}" #opis wywołania
 	
 
-elif [[ $1 = "-u" && ! -z "$2" ]]
+elif [[ $1 = "-u" && ! -z "$2" ]] #infiormacja o bledzie
 then
 	if [[ $2 = "-l" || $2 = "-u" || $2 = "-r" || $2 = "-h" ]]
 	then
@@ -96,10 +101,10 @@ then
 	exit
 	fi
         rename 'y/a-z/A-Z/' "${@:2}"
-else
+else	#informac ja o niewlasciwym inpucie, sprawdzić czy sed zaczyna się ' '
  	for var in "${@:2}"
 do
-	mv "$var" "`echo "$var" | sed -s "$1"`"	
+	mv "$var" "`echo "$var" | sed -s "$1"`"	 #dokladny opis
 done
 
 fi
