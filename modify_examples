@@ -1,28 +1,27 @@
 cat<<EOT
 
 Typical 
-		./modify -u file - will turn "file" into "FILE"
-		./modify -l FILE - will turn "FILE" into "file"
-		./modify -l FILE FILE2 FILE3 - will turn "FILE" into "file","FILE2" into "file2","FILE3" into "file3"
-		./modify -h will print help file
-		./modify -r -l dir <any other file>- will turn dir and every file/directory that it contains to lowercase
-		./modify -r -u dir <any other file>- will turn dir and every file/directory that it contains to uppercase
-		./modify 's/name/new/g' name <any other file> - will change the name of a file to new 
-		./modify -r 's/dir/new/g' dir <any other file> - will change the name of a dir to new and if any file/dir in dir has
-		name dir it will change it name too.
+		./modify -u file 					- will turn "file" into "FILE"
+		./modify -l FILE 					- will turn "FILE" into "file"
+		./modify -l FILE FILE2 FILE3				- will turn "FILE" into "file","FILE2" into "file2","FILE3" into "file3"
+		./modify -h						- will print help file
+		./modify -r -l dir <any other file>			- will turn dir and every file/directory that it contains to lowercase
+		./modify -r -u dir <any other file>			- will turn dir and every file/directory that it contains to uppercase
+		./modify 's/name/new/g' name <any other file> 		- will change the name of a file to new 
+		./modify -r 's/dir/new/g' dir <any other file> 		- will change the name of a dir to new and if any file/dir in dir has
+		name dir it will change its name too.
 		
 UNCOMMON and INCORRECT
-		./modify	 			no arguments, nowthing will be performed
-		./modify [-l|-u] 		no file/dir name at the input
-		./modify -l -u	name	incorrect syntax
-		./modify -u -l 	name	incorrect syntax
-		./modify -u -r 	name	incorrect syntax
-		./modify -l -r 	name	incorrect syntax
-		./modify -h -r 	name	incorrect syntax
-		./modify -h -l 	name	incorrect syntax
-		./modify -h -u 	name	incorrect syntax
-		./modify -h -h 	name	incorrect syntax
-		./modify random_input	does nothing
+		./modify	 					- no arguments, nowthing will be performed
+		./modify [-l|-u] 					- no file/dir name at the input
+		./modify -l -u	name					- incorrect syntax
+		./modify -u -l 	name					- incorrect syntax
+		./modify -u -r 	name					- incorrect syntax
+		./modify -l -r 	name					- incorrect syntax
+		./modify -h -r 	name					- incorrect syntax
+		./modify -h -l 	name					- incorrect syntax
+		./modify -h -u 	name					- incorrect syntax
+		./modify -h -h 	name					- incorrect syntax
 		
 EOT
 exit

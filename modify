@@ -1,25 +1,29 @@
 #!/bin/bash
 
-#komantarze
 #błędy na wypadek wpisania złych argumentów
 
 
 
-help()
+help() #information too user when -h argument is used
 {
 cat<<EOT
 
 Arguments:
  -l			lowercase
- -u			uprpercase 		#literówki
+ -u			uppercase 		
  -r			recursive
  -h 			help
  <sed pattern> 		using sed pattern
 
-Examples:
-	$name [-r] [-l|-u] <dir|file names>
+Usage:
+	$name [-r] [-l XOR -u] <dir|file names>
 	$name [-r] <sed pattern> <dir/file names> 
-
+Adnotation:
+If one wants use -r argument should place it as a first argument
+in example:
+	$name -r -l dir
+not:
+	$name -l -r dir
 
 EOT
 exit
@@ -28,52 +32,54 @@ exit
 
 if [ -z "$1" ] #check if argument exists
 then
-		echo "no arguments"
+		echo "no arguments"	#if not inform user and exit execution
 exit
 
 elif [ $1 = "-h" ]
-then
-	if [[ $2 = "-l" || $2 = "-u" || $2 = "-r" || $2 = "-h" ]]	#opisać
+thenether 
+	if [[ $2 = "-l" || $2 = "-u" || $2 = "-r" || $2 = "-h" ]]	#check whether incorrect argument pattern is used
 	then
-		echo "invalid syntax"
+		echo "invalid syntax"	#if incorret pattern of inputs has been inputed inform about invailid syntax
 	exit
 	fi
         help
 
 
-elif [ $1 = "-r" ]
+elif [ $1 = "-r" ]	#check if first argument is -r
 then
-	if [[ $2 = "-l" && ! -z "$3" ]] #opisac
+	if [[ $2 = "-l" && ! -z "$3" ]] #check whether third argument exist in order to avoid sitations that there is no file/folders provided
 	then
-	for SRC in `find "${@:3}" -depth`
+	for SRC in `find "${@:3}" -depth` #loop whch goes from bottom dir, and perform find on it with arguments $3 $4....or higher
 	do
-    		DST=`dirname "${SRC}"`/`basename "${SRC}" | tr '[A-Z]' '[a-z]'`
-    		if [ "${SRC}" != "${DST}" ]
+    		DST=`dirname "${SRC}"`/`basename "${SRC}" | tr '[A-Z]' '[a-z]'`	#making new path for argument with basename changed to lowwer letters and saved in $DST
+    		if [ "${SRC}" != "${DST}" ]	#check whether DST is not equal to SRC in order to avoid making senseless file name change
     		then
-        	[ ! -e "${DST}" ] && mv -T "${SRC}" "${DST}" || echo "${SRC} was not renamed" #opisać
+        	[ ! -e "${DST}" ] && mv -T "${SRC}" "${DST}" || echo "${SRC} was not renamed" #if DST does not exist we ommit second and argument and go directly to secodn OR arguement, if DST exist we 
+											      #rename $SRC to DST with no target directory argument 
     	fi
 	done
 
-	elif [[  $2 = "-u" && ! -z "$3" ]]
+	elif [[  $2 = "-u" && ! -z "$3" ]] #check whether third argument exist in order to avoid sitations that there is no file/folders provided
         then
-        for SRC in `find "${@:3}" -depth`
+        for SRC in `find "${@:3}" -depth` #loop whch goes from bottom dir, and perform find on it with arguments $3 $4....or higher
 	do
-    		DST=`dirname "${SRC}"`/`basename "${SRC}" | tr '[a-z]' '[A-Z]'`
-    		if [ "${SRC}" != "${DST}" ]
+    		DST=`dirname "${SRC}"`/`basename "${SRC}" | tr '[a-z]' '[A-Z]'` #making new path for argument with basename changed to upper letters and saved in $DST
+    		if [ "${SRC}" != "${DST}" ]	#check whether DST is not equal to SRC in order to avoid making senseless file name change
     		then
-        	[ ! -e "${DST}" ] && mv -T "${SRC}" "${DST}" || echo "${SRC} was not renamed" #opisać
+        	[ ! -e "${DST}" ] && mv -T "${SRC}" "${DST}" || echo "${SRC} was not renamed" #if DST does not exist we ommit second and argument and go directly to secodn OR arguement, if DST exist we 
+											      #rename $SRC to DST with no target directory argument 
     	fi
 	done
 	        else
-                	for SRC in `find "${@:3}" -depth`
+                	for SRC in `find "${@:3}" -depth` #loop whch goes from bottom dir, and perform find on it
         		do             		
-					BASE=`basename "${SRC}"`              			
-					DST=`echo "$BASE" | sed -s "$2"`
-					DST=`dirname "${SRC}"`/"$DST"
+					BASE=`basename "${SRC}"`    #BASE = base name of the file what means without directory         			
+					DST=`echo "$BASE" | sed -s "$2"` # performs sed pattern on it, and save it on DST
+					DST=`dirname "${SRC}"`/"$DST" #DST save new path with dirname of unchanged SRC but with modified DST
 					#echo $DST
-					if [ "${SRC}" != "${DST}" ]
+					if [ "${SRC}" != "${DST}" ] #check whether DST is not equal to SRC in order to avoid making senseless file name change
                 			then
-                				[ ! -e "${DST}" ] && mv "${SRC}" "${DST}"
+                				[ ! -e "${DST}" ] && mv "${SRC}" "${DST}" #if DST do not exist don't do nothing, otherwise change name of DST
         				fi       			
         		done
 
@@ -83,28 +89,28 @@ then
 
 
 
-elif [[ $1 = "-l" && ! -z "$2" ]] #infomacja o bledzie
+elif [[ $1 = "-l" && ! -z "$2" ]] #check if $2 exist in order to avoid not providing filenames to be changed
 then
-	if [[ $2 = "-l" || $2 = "-u" || $2 = "-r" || $2 = "-h" ]]
+	if [[ $2 = "-l" || $2 = "-u" || $2 = "-r" || $2 = "-h" ]] #check whether incorrect argument pattern is used
 	then
-		echo "invalid syntax"
+		echo "invalid syntax" #inform user about invailid synax
 	exit
 	fi
-        rename 'y/A-Z/a-z/' "${@:2}" #opis wywołania
+        rename 'y/A-Z/a-z/' "${@:2}" #rename Uppercas letter to lowercase latters for each argument $i where i = {2,3,4,5 ...}
 	
 
 elif [[ $1 = "-u" && ! -z "$2" ]] #infiormacja o bledzie
 then
-	if [[ $2 = "-l" || $2 = "-u" || $2 = "-r" || $2 = "-h" ]]
+	if [[ $2 = "-l" || $2 = "-u" || $2 = "-r" || $2 = "-h" ]] #check whether incorrect argument pattern is used
 	then
-		echo "invalid syntax"
+		echo "invalid syntax" #inform user about invailid synax
 	exit
 	fi
-        rename 'y/a-z/A-Z/' "${@:2}"
+        rename 'y/a-z/A-Z/' "${@:2}" #rename Uppercas letter to lowercase latters for each argument $i where i = {2,3,4,5 ...}
 else	#informac ja o niewlasciwym inpucie, sprawdzić czy sed zaczyna się ' '
- 	for var in "${@:2}"
+ 	for var in "${@:2}" # loop on each argument provided for sed pattern
 do
-	mv "$var" "`echo "$var" | sed -s "$1"`"	 #dokladny opis
+	mv "$var" "`echo "$var" | sed -s -q "$1"`"	 #mov $var (orginal name) for $var piped to sed with $1(sed pattern gived by the user)
 done
 
 fi
