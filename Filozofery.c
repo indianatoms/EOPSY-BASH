@@ -48,8 +48,16 @@ void takeForks(int left_fork_id, int right_fork_id) {
 	printf("%i TRYS TO TAKE FORKS ==> %i L || %i R\n", left_fork_id, left_fork_id, right_fork_id);
 
 
-	struct sembuf semaphor_fork[2] = { {right_fork_id, -1, 0}, {left_fork_id, -1, 0} }; //struct sembuf { {semNumber, semOperation, operationFlags} }, semOperation > 0 | < 0 -increase/decrease sem by value, semOperation = 0 -wait for 0, sem_flg: 0 - blocking operation, IPC_NOWAIT - nonblocking operation
-    semop(semaphor_id, semaphor_fork, 2); //Operation on semaphores - semop(SemId, SemaphorBufferStruct, numberOfSemaphorsOnWhichOperationIsPerformed), perform semathor blocking operation
+	struct sembuf semaphor_fork[2] = { {right_fork_id, -1, 0}, {left_fork_id, -1, 0} }; 
+	//struct sembuf { {semNumber, semOperation, operationFlags} }, semOperation > 0 | < 0 -increase/decrease sem by value, 
+	//semOperation = 0 -wait for 0, sem_flg: 0 - blocking operation, IPC_NOWAIT - nonblocking operation
+	
+    	semop(semaphor_id, semaphor_fork, 2); 
+	
+	//semop() performs operations on selected semaphores in the set indicated by semid. 
+	//Each of the nsops elements in the array pointed to by sops specifies an operation 
+	//to be performed on a single semaphore. The elements of this structure are of type 
+	//struct sembuf, containing the following members: 
 }
 
 void leaveForks (int left_fork_id, int right_fork_id) {
@@ -71,16 +79,35 @@ int main() {
 
 	int i = 0;
 
-	semaphor_id = semget(SEM_KEY, 5, 0644 | IPC_CREAT); //semget(semKey, numberOfSemaphores, access_rights |IPC_CREAT), 644 => rw- r-- r--  owner group others, IPC_CREAT specified in semflg
-    //Grants access or creates permission for semaphores.
+	semaphor_id = semget(SEM_KEY, 5, 0644 | IPC_CREAT); 
+	//It may be used either
+        //to obtain the identifier of a previously created semaphore set (when
+        //semflg is zero and key does not have the value IPC_PRIVATE), or to
+        //create a new set.
+	
+   	 //Grants access or creates permission for semaphores.
 	if (semaphor_id == -1) {
 		printf("\nERROR\n");
 		exit(1);
 	}
 
 	while (i <= 4)
-		semctl(semaphor_id, i++, SETVAL, 1); //It manages the semaphores.(control operation) semctl(nrOfSemaphoresSet, nrOfSemaphor, command, commandParameters), SETVAL returns semnum
+		semctl(semaphor_id, i++, SETVAL, 1); 
+	
+	   //semctl() performs the control operation specified by cmd on the
+           //System V semaphore set identified by semid, or on the semnum-th
+           //semaphore of that set.  
 
+	   //	 SETVAL    Set the value of semval to arg.val for the semnum-th sema‐
+           //      phore of the set, updating also the sem_ctime member of the
+           //      semid_ds structure associated with the set.  Undo entries
+           //      are cleared for altered semaphores in all processes.  If
+           //      the changes to semaphore values would permit blocked
+           //      semop(2) calls in other processes to proceed, then those
+           //      processes are woken up.  The calling process must have
+           //      alter permission on the semaphore set.
+	
+	
 	for (int i = 0; i<5; i++)
 	{
 		proc_id = fork();
@@ -110,7 +137,21 @@ int main() {
 	// Deallocation of semaphores:
 	if (semctl(semaphor_id, 0, IPC_RMID, 1)<0)
 		printf("ERROR deallocationg semaphores.\n");
+	
+	
+	 // semctl() performs the control operation specified by cmd on the
+         // System V semaphore set identified by semid, or on the semnum-th
+         // semaphore of that set.  (The semaphores in a set are numbered
+         // starting at 0.)
 
+	 //IPC_RMID  Immediately remove the semaphore set, awakening all pro‐
+         //        cesses blocked in semop(2) calls on the set (with an error
+         //        return and errno set to EIDRM).  The effective user ID of
+         //        the calling process must match the creator or owner of the
+         //        semaphore set, or the caller must be privileged.  The argu‐
+         //        ment semnum is ignored.
+	
+	
 	return 0;
 }
 
