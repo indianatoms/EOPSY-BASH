@@ -1,3 +1,7 @@
+//cc -pthread -o filo lab7.c
+//run command
+
+
 #include <pthread.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -25,7 +29,7 @@ void test(int id) {
 	if( state[id] == HUNGRY && state[LEFT] != EATING && state[RIGHT] != EATING )
 	{
 		state[id] = EATING;
-		up(&s[id]); //unlock its mutex in order to allow grabing forks
+		up(&s[id]); //unlock mutex in oredr to perform operation
 	}
 }
 
@@ -34,8 +38,10 @@ void grab_forks(int id)
 	down(&m);//lock the internal mutex in order to disallow more than one process es doing same thing
 		state[id] = HUNGRY;
 		test(id);
-	up(&m);
-	down(&s[id]); //lock the motex of followed id, will be unlocked after puting  away forks
+	up(&m); // to group task
+	down(&s[id]); //lock the motex of followed id, will be locked ofert eating - not to perform further operations
+                  //perfrm each eating separate
+                  //in case of test performed well
 }
 
 void put_away_forks(int id)
@@ -44,7 +50,7 @@ void put_away_forks(int id)
 		state[id] = THINKING;
 		test(LEFT);
 		test(RIGHT);
-	up(&m);// unlock internal mutex
+	up(&m);// unlock internal mutex - to group task
 }
 
 void *philocycle(int id){
@@ -53,7 +59,7 @@ void *philocycle(int id){
 	while(meals_left){
 		printf("%i is thinking.\n", id);
 		sleep(THINKING_TIME);
-		grab_forks(id);
+		grab_forks(id);//each will grab forks
 		meals_left--;
 		printf("%i is eating the meal no. %d.\n", id,(FOOD_LIMIT-meals_left));
 		sleep(EATING_TIME);
@@ -70,19 +76,18 @@ int main()
 		for (int i = 0 ; i < N ; i++)
         {
             p[i] = THINKING;//all philosopfers thinkig
-            pthread_mutex_init(&s[i], NULL);//block all mutex cause all are thinking
-            printf("P%i is thinking\n",i);
-            down(&s[i]);
+            pthread_mutex_init(&s[i], NULL);//mutex array initialization
+            down(&s[i]);//lock all mutexs
         }
 
 for (int i = 0 ; i < N ; i++)
-		pthread_create(&p[i], NULL, (void *)philocycle, (void *)i);//create a thread
+                pthread_create(&p[i], NULL, (void *)philocycle, (void *)i);//create a thread
 
 	for (int i = 0 ; i < N ; i++)
-		pthread_join(p[i], NULL);//destroy the thuread
+		pthread_join(p[i], NULL);//join all threads into one
 
 	for (int i = 0 ; i < N ; i++)
-		pthread_mutex_destroy(&s[i]);//destroy mutexes
+		pthread_mutex_destroy(&s[i]);//destroy mutex - no longer used
 
 
 
